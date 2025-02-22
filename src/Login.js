@@ -11,7 +11,7 @@ const Login = ({ onLogin }) => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen ">
+    <div className="flex justify-center items-center h-screen mb-10 ">
       <form onSubmit={handleSubmit} className="bg-gray-700 p-8 rounded-lg shadow-lg w-96">
         <h2 className="text-2xl text-center text-white mb-4">Enter your Name</h2>
         <label className="text-white block mb-2" htmlFor="username">

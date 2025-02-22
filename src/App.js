@@ -15,7 +15,7 @@ function App() {
   
 
   return (
-    <div className="min-h-screen text-white">
+    <div className="min-h-screen text-white ">
       {!isLoggedIn ? (
         <Login onLogin={handleLogin} /> // Show Login if not logged in
       ) : (

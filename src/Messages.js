@@ -6,30 +6,24 @@ const Messages = ({ username }) => {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    // Create a WebSocket connection to the server
     socketRef.current = new WebSocket('ws://localhost:8080');
 
     socketRef.current.onmessage = (event) => {
       let newMessage = event.data;
-
-      // Check if the message is a Blob
       if (newMessage instanceof Blob) {
         const reader = new FileReader();
         reader.onloadend = () => {
-          // Once the Blob is read, update the messages state with the text
           setMessages((prevMessages) => [
             ...prevMessages,
-            reader.result, // Add the Blob as text to the messages list
+            reader.result, 
           ]);
         };
-        reader.readAsText(newMessage); // Convert Blob to text
+        reader.readAsText(newMessage); 
       } else {
-        // If the message is not a Blob, just add it as is
         setMessages((prevMessages) => [...prevMessages, newMessage]);
       }
     };
 
-    // Send the username to the server after connection
     socketRef.current.onopen = () => {
       socketRef.current.send(username);
     };
@@ -50,10 +44,19 @@ const Messages = ({ username }) => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-white border border-black border-solid  text-white p-4">
+    <div className="flex flex-col h-screen  text-white p-4
+      style={{
+        backgroundImage: 'url(/NO_BG_PNG.png)', 
+        backgroundSize: 'contain', 
+        backgroundPosition: 'center', 
+        backgroundRepeat: 'no-repeat', 
+        height: '8px', 
+        width: '100%', 
+      }}
+    ">
       <div id="messages" className="flex-grow overflow-auto mb-4">
         {messages.map((msg, index) => (
-          <div key={index} className="message bg-blue-800 p-2 mb-2 rounded">
+          <div key={index} className="message bg-gray-200 text-black p-2 mb-2 rounded">
             {msg}
           </div>
         ))}
