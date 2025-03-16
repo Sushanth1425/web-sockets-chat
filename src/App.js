@@ -6,9 +6,11 @@ import Messages from './Messages';
 function App() {
   const [username, setUsername] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [roomID, setRoomID] = useState(''); 
 
-  const handleLogin = (name) => {
+  const handleLogin = (name,roomID) => {
     setUsername(name);
+    setRoomID(roomID); 
     setIsLoggedIn(true); // User is now logged in
   };
 
@@ -19,7 +21,7 @@ function App() {
       {!isLoggedIn ? (
         <Login onLogin={handleLogin} /> // Show Login if not logged in
       ) : (
-        <Messages username={username} /> // Show Messages if logged in
+        <Messages username={username} roomID={roomID} /> // Show Messages if logged in
       )}
     </div>
   );

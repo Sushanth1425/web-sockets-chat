@@ -1,37 +1,37 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const Messages = ({ username }) => {
+const Messages = ({ username, roomID }) => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const socketRef = useRef(null);
 
   useEffect(() => {
-    socketRef.current = new WebSocket('ws://localhost:8080');
+    // Establish WebSocket connection to the backend with roomID in the URL
+    socketRef.current = new WebSocket(`ws://localhost:8080/${roomID}`);
 
+    // Handle incoming messages
     socketRef.current.onmessage = (event) => {
-      let newMessage = event.data;
-      if (newMessage instanceof Blob) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            reader.result, 
-          ]);
-        };
-        reader.readAsText(newMessage); 
-      } else {
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
+      const newMessage = event.data;
+      try {
+        const parsedMessage = JSON.parse(newMessage);
+        // If it's not a join/leave message, add it to the chat
+        if (!parsedMessage.msg.includes("has joined") && !parsedMessage.msg.includes("has left")) {
+          setMessages((prevMessages) => [...prevMessages, parsedMessage.msg]);
+        }
+      } catch (error) {
+        console.error('Error parsing message:', error);
       }
     };
 
+    // Send the username when the connection opens
     socketRef.current.onopen = () => {
-      socketRef.current.send(username);
+      socketRef.current.send(username); // Send the username only once
     };
 
     return () => {
       socketRef.current.close();
     };
-  }, [username]);
+  }, [username, roomID]);
 
   const sendMessage = (e) => {
     e.preventDefault();
@@ -44,16 +44,7 @@ const Messages = ({ username }) => {
   };
 
   return (
-    <div className="flex flex-col h-screen  text-white p-4
-      style={{
-        backgroundImage: 'url(/NO_BG_PNG.png)', 
-        backgroundSize: 'contain', 
-        backgroundPosition: 'center', 
-        backgroundRepeat: 'no-repeat', 
-        height: '8px', 
-        width: '100%', 
-      }}
-    ">
+    <div className="flex flex-col h-screen text-white p-4">
       <div id="messages" className="flex-grow overflow-auto mb-4">
         {messages.map((msg, index) => (
           <div key={index} className="message bg-gray-200 text-black p-2 mb-2 rounded">
@@ -61,9 +52,9 @@ const Messages = ({ username }) => {
           </div>
         ))}
       </div>
-      <form onSubmit={sendMessage} className="flex  space-x-2">
+      <form onSubmit={sendMessage} className="flex space-x-2">
         <input
-          className="w-full border border-solid p-2  text-black rounded focus:outline-none"
+          className="w-full border border-solid p-2 text-black rounded focus:outline-none"
           type="text"
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
