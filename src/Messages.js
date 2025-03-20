@@ -4,6 +4,13 @@ const Messages = ({ username, roomID, darkMode }) => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const socketRef = useRef(null);
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   useEffect(() => {
     // Connect to WebSocket server
@@ -56,6 +63,7 @@ const Messages = ({ username, roomID, darkMode }) => {
             <strong>{msgObj.sender}:</strong> {msgObj.msg}
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Input Field */}
